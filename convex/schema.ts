@@ -2,16 +2,23 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-  queues: defineTable({
+  businesses: defineTable({
     slug: v.string(),
+    name: v.string(),
+    password: v.optional(v.string()),
+    isOnline: v.optional(v.boolean()),
+    activeCount: v.optional(v.number()),
     currentServing: v.number(),
     lastIssued: v.number(),
   }).index("by_slug", ["slug"]),
 
   tickets: defineTable({
-    queueId: v.id("queues"),
+    businessId: v.id("businesses"),
     number: v.number(),
-    phone: v.string(),
-    status: v.string(), // 'waiting', 'done'
-  }).index("by_queue", ["queueId"]),
+    name: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    status: v.string(), // 'waiting', 'served', 'cancelled'
+    createdAt: v.number(),
+    servedAt: v.optional(v.number()), // For AI stats
+  }).index("by_business_status", ["businessId", "status"]),
 });

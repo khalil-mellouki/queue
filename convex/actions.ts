@@ -1,24 +1,33 @@
 "use node";
-import { action } from "./_generated/server";
-import { internal } from "./_generated/api";
 import { v } from "convex/values";
-import twilio from "twilio";
+import { action } from "./_generated/server";
+import Twilio from "twilio";
 
-const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_TOKEN);
-
-export const notifyNext = action({
-  args: { phone: v.string(), ticketNumber: v.number() },
+export const notifyCustomer = action({
+  args: {
+    phone: v.string(),
+    message: v.string(),
+  },
   handler: async (ctx, args) => {
-    if (!args.phone) return;
-    
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const authToken = process.env.TWILIO_AUTH_TOKEN;
+    const fromNumber = process.env.TWILIO_PHONE_NUMBER;
+
+    if (!accountSid || !authToken || !fromNumber) {
+      console.log("Twilio credentials missing - skipping notification");
+      return;
+    }
+
     try {
+      const client = Twilio(accountSid, authToken);
       await client.messages.create({
-        from: `whatsapp:${process.env.TWILIO_PHONE}`,
-        to: `whatsapp:${args.phone}`,
-        body: `🔔 Heads up! Ticket #${args.ticketNumber}, you are almost up! Please head to the counter.`
+        body: args.message,
+        from: fromNumber,
+        to: args.phone,
       });
-    } catch (e) {
-      console.error("Twilio failed", e);
+      console.log(`Notification sent to ${args.phone}`);
+    } catch (error) {
+      console.error("Twilio error:", error);
     }
   },
 });

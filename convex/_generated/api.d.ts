@@ -8,13 +8,19 @@
  * @module
  */
 
+import type * as actions from "../actions.js";
+import type * as queue from "../queue.js";
+
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
 } from "convex/server";
 
-declare const fullApi: ApiFromModules<{}>;
+declare const fullApi: ApiFromModules<{
+  actions: typeof actions;
+  queue: typeof queue;
+}>;
 
 /**
  * A utility for referencing Convex functions in your app's public API.
