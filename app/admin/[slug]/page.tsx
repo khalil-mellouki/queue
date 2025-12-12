@@ -74,26 +74,33 @@ export default function AdminDashboard() {
   const joinUrl = `${window.location.origin}/queue/${slug}`;
 
   return (
-    <div className="min-h-screen bg-neutral-50 p-6">
-      <div className="max-w-5xl mx-auto space-y-6">
+    <div className="min-h-screen bg-[#0a0a0a] text-white p-4 md:p-8 font-sans selection:bg-indigo-500/30">
+        
+        {/* Background Elements */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[100px]"></div>
+            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[100px]"></div>
+        </div>
+
+      <div className="max-w-6xl mx-auto space-y-8 relative z-10">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-white/10">
             <div>
-                <h1 className="text-3xl font-bold">{business.name}</h1>
-                <p className="text-neutral-500">Admin Dashboard</p>
+                <h1 className="text-4xl font-black tracking-tight mb-1">{business.name}</h1>
+                <p className="text-gray-400 font-medium tracking-wide">Zerovide Admin</p>
             </div>
             
             <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border shadow-sm">
-                    <div className={`w-3 h-3 rounded-full ${business.isOnline ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
-                    <span className="text-sm font-medium text-neutral-600">
-                        {business.isOnline ? "Online" : "Offline"}
+                <div className={`flex items-center gap-2 px-4 py-2 rounded-full border backdrop-blur-md transition-all ${business.isOnline ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border-rose-500/20 text-rose-400'}`}>
+                    <div className={`w-2 h-2 rounded-full ${business.isOnline ? 'bg-emerald-500' : 'bg-rose-500'} animate-pulse`} />
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                        {business.isOnline ? "System Online" : "System Offline"}
                     </span>
                 </div>
                  <Button 
-                    variant="outline"
-                    className="text-red-500 border-red-200 hover:bg-red-50"
+                    variant="default"
+                    className="bg-white text-black hover:bg-white/10 hover:text-white transition-colors border-0 font-bold"
                     onClick={handleLogout}
                 >
                     Logout
@@ -101,92 +108,110 @@ export default function AdminDashboard() {
             </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Control Panel */}
-            <Card className="border-2 border-black/10 shadow-lg md:col-span-1">
-                <CardHeader>
-                    <CardTitle>Queue Control</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="bg-black/5 p-8 rounded-xl text-center">
-                        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Now Serving</p>
-                        <p className="text-7xl font-black mt-2">#{business.currentServing}</p>
-                        {currentTicket ? (
-                             <p className="text-xl mt-2 font-medium text-blue-600 animate-pulse bg-blue-50 inline-block px-4 py-1 rounded-full">
-                                {currentTicket.name || "Guest"}
-                             </p>
-                        ) : (
-                             <p className="text-sm text-gray-400 mt-2">Waiting...</p>
-                        )}
+            <div className="space-y-6">
+                <div className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-xl shadow-2xl relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                    
+                    <div className="relative z-10 text-center space-y-6">
+                        <div>
+                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Now Serving Ticket</p>
+                            <div className="relative inline-block">
+                                <span className="text-8xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 tracking-tighter">
+                                    #{business.currentServing}
+                                </span>
+                            </div>
+                            
+                            <div className="h-10 mt-2">
+                                {currentTicket ? (
+                                     <div className="inline-flex items-center gap-2 bg-indigo-500/20 border border-indigo-500/30 px-6 py-2 rounded-full animate-in fade-in zoom-in duration-300">
+                                        <span className="text-indigo-300 text-lg">👤</span>
+                                        <span className="text-indigo-200 font-bold text-lg tracking-wide">
+                                            {currentTicket.name || "Guest"}
+                                        </span>
+                                     </div>
+                                ) : (
+                                     <span className="text-sm text-gray-600 font-mono py-3 block">Waiting for customer...</span>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="pt-8 space-y-4">
+                            <Button 
+                                size="lg" 
+                                className="w-full text-lg py-8 font-bold bg-white text-black hover:bg-gray-200 shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all hover:scale-[1.02] active:scale-[0.98]" 
+                                onClick={() => nextCustomer({ slug })}
+                                disabled={!business.isOnline || business.currentServing > business.lastIssued}
+                            >
+                                Call Next Customer ⚡
+                            </Button>
+                            
+                            {/* Reset - Hidden by default or subtle */}
+                             <Button 
+                                variant="ghost" 
+                                className="w-full text-xs text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                                onClick={() => {
+                                    if(confirm("DANGER ZONE: Reset Queue? This cannot be undone.")) {
+                                        resetQueue({ slug });
+                                    }
+                                }}
+                             >
+                                 Reset System
+                             </Button>
+                        </div>
                     </div>
-
-                    <Button 
-                        size="lg" 
-                        className="w-full text-xl py-8 font-bold" 
-                        onClick={() => nextCustomer({ slug })}
-                        disabled={!business.isOnline || business.currentServing > business.lastIssued}
-                    >
-                        Call Next Customer
-                    </Button>
-
-                     <Button 
-                        variant="ghost" 
-                        className="w-full text-red-500 hover:text-red-600 hover:bg-red-50"
-                        onClick={() => {
-                            if(confirm("Are you sure? This will cancel all tickets.")) {
-                                resetQueue({ slug });
-                            }
-                        }}
-                     >
-                         Reset Queue
-                     </Button>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
 
             {/* Right Column: QR & Stats */}
             <div className="space-y-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Join Queue</CardTitle>
-                        <CardDescription>Scan to join</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-col items-center">
-                        <div className="bg-white p-4 rounded-xl border shadow-sm">
+                {/* QR Card */}
+                <div className="bg-black/20 border border-white/10 rounded-3xl p-6 backdrop-blur-md">
+                    <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span className="bg-white/10 p-1.5 rounded-lg text-sm">📱</span> 
+                        Join Access
+                    </h3>
+                    <div className="flex flex-col items-center bg-white/5 rounded-2xl p-6 border border-white/5">
+                        <div className="bg-white p-4 rounded-xl shadow-lg mb-4">
                             <QRCode 
                                 id="qr-code-svg"
                                 value={joinUrl} 
-                                size={180} 
+                                size={160} 
                             />
                         </div>
                         <Button 
                             variant="outline" 
                             size="sm" 
-                            className="mt-4 w-full"
+                            className="w-full border-white/10 hover:bg-white/10 text-gray-300"
                             onClick={downloadQR}
                         >
-                            Download QR
+                            Download PNG ⬇️
                         </Button>
-                        <a href={joinUrl} target="_blank" className="mt-2 text-xs font-mono bg-neutral-100 p-2 rounded block w-full text-center truncate">
+                        <a href={joinUrl} target="_blank" className="mt-4 text-[10px] text-gray-500 font-mono hover:text-indigo-400 transition-colors break-all text-center">
                             {joinUrl}
                         </a>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Statistics</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                        <div className="flex justify-between items-center border-b pb-2">
-                             <span className="text-neutral-500">Total Issued</span>
-                             <span className="font-bold">#{business.lastIssued}</span>
+                {/* Stats Card */}
+                <div className="bg-black/20 border border-white/10 rounded-3xl p-6 backdrop-blur-md">
+                     <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span className="bg-white/10 p-1.5 rounded-lg text-sm">📊</span> 
+                        Real-time Stats
+                    </h3>
+                    <div className="space-y-1">
+                        <div className="flex justify-between items-center p-3 hover:bg-white/5 rounded-xl transition-colors">
+                             <span className="text-gray-400 text-sm font-medium">Total Tickets</span>
+                             <span className="font-mono font-bold text-xl text-white">#{business.lastIssued}</span>
                         </div>
-                        <div className="flex justify-between items-center border-b pb-2">
-                             <span className="text-neutral-500">Waiting</span>
-                             <span className="font-bold">{business.activeCount ?? 0}</span>
+                        <div className="w-full h-px bg-white/5"></div>
+                        <div className="flex justify-between items-center p-3 hover:bg-white/5 rounded-xl transition-colors">
+                             <span className="text-gray-400 text-sm font-medium">People Waiting</span>
+                             <span className="font-mono font-bold text-xl text-orange-400">{business.activeCount ?? 0}</span>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             </div>
         </div>
 

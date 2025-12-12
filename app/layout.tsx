@@ -6,8 +6,8 @@ import ConvexClientProvider from "./ConvexClientProvider"; // <--- Import this
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Queue App",
-  description: "Hackathon Queue System",
+  title: "Zerovide",
+  description: "Virtual Queue System",
 };
 
 export default function RootLayout({

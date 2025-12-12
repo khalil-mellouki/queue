@@ -329,13 +329,14 @@ export default function QueuePage() {
 
       </div>
 
-      <div className="p-6 space-y-4">
+      <div className="absolute top-4 right-4 z-50">
           <Button 
             variant="ghost" 
-            className={`w-full ${uiState === 'close' ? 'text-black hover:bg-black/10' : 'text-white hover:bg-white/20'}`}
+            size="sm"
+            className={`text-xs font-medium backdrop-blur-md border border-white/20 ${uiState === 'close' ? 'bg-black/5 text-black hover:bg-black/10' : 'bg-white/10 text-white hover:bg-white/20'}`}
             onClick={handleLeave}
           >
-              Leave Queue
+              Leave Queue ✕
           </Button>
       </div>
 
