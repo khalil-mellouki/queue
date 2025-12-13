@@ -27,11 +27,7 @@ export default function Home() {
                         Business Login
                     </Button>
                 </Link>
-                <Link href="/super-admin">
-                    <Button variant="ghost" className="w-full text-gray-500 hover:text-white hover:bg-white/5">
-                        Super Admin Access
-                    </Button>
-                </Link>
+
             </div>
         </CardContent>
       </Card>

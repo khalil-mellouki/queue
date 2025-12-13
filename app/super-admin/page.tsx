@@ -10,7 +10,9 @@ import { Badge } from "@/components/ui/badge";
 
 export default function SuperAdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const verifySuper = useMutation(api.queue.verifySuperAdmin);
   const [newSlug, setNewSlug] = useState("");
   const [newName, setNewName] = useState("");
   const [newPassword, setNewPassword] = useState("1234");
@@ -26,12 +28,18 @@ export default function SuperAdminPage() {
   const [editPassword, setEditPassword] = useState("");
 
   // Simple hardcoded super-admin check for demo
-  const handleLogin = (e: React.FormEvent) => {
+  // Secure backend check
+  const handleLogin = async (e: React.FormEvent) => {
       e.preventDefault();
-      if (password === "admin123") {
-          setIsAuthenticated(true);
-      } else {
-          alert("Wrong password");
+      try {
+        const isValid = await verifySuper({ user: username, password });
+        if (isValid) {
+            setIsAuthenticated(true);
+        } else {
+            alert("Access Denied");
+        }
+      } catch (e) {
+        alert("Error verifying credentials");
       }
   };
 
@@ -90,6 +98,13 @@ export default function SuperAdminPage() {
                    </CardHeader>
                    <CardContent>
                        <form onSubmit={handleLogin} className="space-y-4">
+                           <Input 
+                                type="text" 
+                                placeholder="Username" 
+                                value={username}
+                                onChange={e => setUsername(e.target.value)}
+                                className="bg-black/20 border-white/10 text-white placeholder:text-gray-500 text-center text-lg tracking-widest"
+                            />
                            <Input 
                                 type="password" 
                                 placeholder="Master Password" 

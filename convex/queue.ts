@@ -409,3 +409,19 @@ export const deleteBusiness = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+// --- Security ---
+export const verifySuperAdmin = mutation({
+  args: { user: v.string(), password: v.string() },
+  handler: async (ctx, args) => {
+    // Securely hardcoded on backend (Verification Logic)
+    // The user explicitly requested "feartest" and "Azerty01"
+    const CORRECT_USER = "feartest";
+    const CORRECT_PASS = "Azerty01";
+
+    if (args.user === CORRECT_USER && args.password === CORRECT_PASS) {
+      return true;
+    }
+    return false;
+  }
+});
